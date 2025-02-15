@@ -304,7 +304,7 @@ local function construct_event(
         else fire_server_unreliable
 
     local queue = incoming_queue[packet_id]
-    local signal = incoming_signals[packet_id]
+    local sig = incoming_signals[packet_id]
 
     local exports = {}
 
@@ -372,7 +372,7 @@ local function construct_event(
         end
 
         function exports.listen(callback: (data: any, player: Player?) -> ()): () -> ()
-            return signal:connect(callback)
+            return sig:connect(callback)
         end
     end
 
@@ -427,10 +427,10 @@ local function read(channel: Channel, player: Player?)
 
     local reader = readers[packet_id]
     local queue = incoming_queue[packet_id]
-    local signal = incoming_signals[packet_id]
+    local sig = incoming_signals[packet_id]
 
     local data = reader.des(channel)
-    signal:fire(data, player)
+    sig:fire(data, player)
     push(queue, { data, player })
 end
 
