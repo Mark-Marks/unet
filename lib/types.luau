@@ -22,7 +22,7 @@ export type ServerEvent<T> = {
     --- This function returns an iterator for all packets of data stored in the queue.
     --- Once a packet of data is iterated over, it's deleted from the queue.
     --- ```luau
-    --- for index, data in event.poll() do
+    --- for index, data in my_event.poll() do
     ---     ...
     ---     -- the current index is now removed from the queue as it was iterated over; you can only poll in one place
     --- end
@@ -47,7 +47,7 @@ export type ClientEvent<T> = {
     --- This function returns an iterator for all packets of data stored in the queue.
     --- Once a packet of data is iterated over, it's deleted from the queue.
     --- ```luau
-    --- for index, data, player in event.poll() do
+    --- for index, data, player in my_event.poll() do
     ---     ...
     ---     -- the current index is now removed from the queue as it was iterated over; you can only poll in one place
     --- end
@@ -696,36 +696,70 @@ type data_types = {
 }
 
 export type Net = {
-    --- Creates a defined event. Do not use outside of namespaces.
+    --- Defined events are alike to ByteNet packets.
+    --- They're created in namespaces alongside a specific structure for their data.
+    ---
+    --- Defined events will have the best performance and bandwidth, as they use a predetermined structure over dynamically serializing data alongside type information.
+    ---
     --- ```luau
-    --- local t = net.data_types
-    --- return net.define_namespace("namespace_name", function()
-    ---     return {
-    ---         event_name = net.defined({
-    ---             -- `value` can be any type, but it's a struct for demonstration purposes
-    ---             value = t.struct({
-    ---                 a = t.string(),
-    ---                 b = t.uint(2), -- in bytes
-    ---             }),
-    ---             reliability_type = "reliable", -- Optional, can be `reliable` or `unreliable`
-    ---         }),
-    ---         -- etc.
-    ---     }
-    --- end)
+    --- -- shared/events.luau
+    --- local unet = require("@pkg/unet")
+    --- local t = unet.data_type
+    ---
+    --- -- Data structures are defined with Squash
+    --- local person = t.record({ -- Record - a table with static keys and values
+    ---     name = t.string(20), -- <=20 char string
+    ---     age = t.uint(1), -- 1 byet uint (uint8) - 2^8-1 limit
+    ---     height = t.uint(1), -- 1 byte uint (uint8) - 2^8-1 limit
+    ---     sex = t.string(6), -- <=6 char string
+    --- })
+    ---
+    --- -- Namespaces need to have unique names,
+    --- -- but each namespace can have the same event names as another.
+    --- -- You can also choose to create a separate file for each namespace,
+    --- -- and simply return the namespace (`return unet.define_namespace(...)`)
+    --- return {
+    ---     my_namespace = unet.define_namespace("my_namespace", {
+    ---         my_server_event = unet.defined("server->client", person)
+    ---         my_unreliable_server_event = unet.defined("server->client", person, "unreliable"),
+    ---         my_client_event = unet.defined("client->server", person),
+    ---         my_unreliable_client_event = unet.defined("client->server", person, "unreliable"),
+    ---     }),
+    --- }
     --- ```
-    --- @param props packet_props<T>
-    --- @return event<T>
+    --- @param direction "server->client" | "client->server"
+    --- @param value T
+    --- @param reliability_type ("reliable" | "unreliable")? -- Defaults to `reliable`
+    --- @return ServerEvent<T> | ClientEvent<T>
     defined: (<T>(direction: "server->client", value: T, reliability_type: ReliabilityType?) -> ServerEvent<T>)
         & (<T>(direction: "client->server", value: T, reliability_type: ReliabilityType?) -> ClientEvent<T>),
-    --- Creates an undefined event. Not for use in namespaces.
+    --- Undefined events are a shorthand for defined events with an `unknown` data type, with the exception of being created outside of namespaces and instead on both ends of your code.
+    --- They offer slightly worse performance and bandwith over defined events and aren't validated in any way, but they're easier to use DX-wise.
+    ---
     --- ```luau
-    --- local reliable_event: net.event<{ a: string, b: number }> = net.undefined("event_name", "reliable")
-    --- -- This is for demonstration; note that events can't have the same name, even if they're of different reliability types
-    --- local unreliable_event: net.event<{ a: string, b: number }> = net.undefined("event_name", "unreliable")
+    --- -- server/script_a.luau
+    --- local unet = require("@pkg/unet")
+    ---
+    --- -- Names need to be unique regardless of reliability type or script, as
+    --- -- undefined events share the same namespace internally.
+    --- local my_server_event = unet.undefined("server->client", "my_server_event")
+    --- local my_unreliable_server_event = unet.undefined("server->client", "my_unreliable_server_event", "unreliable")
+    --- local my_client_event = unet.undefined("client->server", "my_client_event")
+    --- local my_unreliable_client_event = unet.undefined("client->server", "my_unreliable_client_event", "unreliable")
+    ---
+    --- -- You can also choose to add types to them, although this doesn't do anything
+    --- -- other than giving the luau type system information about them.
+    --- local some_event: unet.ServerEvent<{
+    ---     name: string,
+    ---     age: number,
+    ---     height: number,
+    ---     sex: string,
+    --- }> = unet.undefined("server->client", "some_event")
     --- ```
+    --- @param direction "server->client" | "client->server"
     --- @param name string
-    --- @param reliability_type "reliable" | "unreliable"
-    --- @return event<T>
+    --- @param reliability_type ("reliable" | "unreliable")? -- Defaults to `reliable`
+    --- @return ServerEvent<T> | ClientEvent<T>
     undefined: (<T>(direction: "server->client", name: string, reliability_type: ReliabilityType?) -> ServerEvent<T>)
         & (<T>(direction: "client->server", name: string, reliability_type: ReliabilityType?) -> ClientEvent<T>),
 

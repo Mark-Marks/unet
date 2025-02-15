@@ -1,10 +1,10 @@
 name = "marked/unet"
-version = "0.1.0-alpha.0"
+version = "0.1.0-alpha.1"
 description = "A fast, optionally structured networking library"
 authors = ["marked"]
 repository = "https://github.com/mark-marks/unet"
 license = "MIT"
-include = ["dist", "LICENSE", "pesde.toml", "README.md"]
+includes = ["dist/**/*", "LICENSE", "pesde.toml", "README.md", "CHANGELOG.md"]
 
 [target]
 environment = "roblox"
