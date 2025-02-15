@@ -1,0 +1,30 @@
+name = "marked/unet"
+version = "0.1.0-alpha.0"
+description = "A fast, optionally structured networking library"
+authors = ["marked"]
+repository = "https://github.com/mark-marks/unet"
+license = "MIT"
+include = ["dist", "LICENSE", "pesde.toml", "README.md"]
+
+[target]
+environment = "roblox"
+lib = "dist/init.luau"
+build_files = ["dist"]
+
+[indices]
+default = "https://github.com/pesde-pkg/index"
+
+[wally_indices]
+default = "https://github.com/UpliftGames/wally-index"
+
+[scripts]
+roblox_sync_config_generator = ".pesde/scripts/roblox_sync_config_generator.luau"
+sourcemap_generator = ".pesde/scripts/sourcemap_generator.luau"
+
+[dev_dependencies]
+scripts = { name = "pesde/scripts_rojo", version = "^0.1.0", target = "lune" }
+rojo = { name = "pesde/rojo", version = "^7.4.4", target = "lune" }
+
+[dependencies]
+luausignal = { wally = "wally#ffrostfall/luausignal", version = "^0.4.0" }
+squash = { wally = "wally#data-oriented-house/squash", version = "^2.5.0" }

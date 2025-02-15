@@ -1,0 +1,6 @@
+{
+  "name": "unet",
+  "tree": {
+    "$path": "dist"
+  }
+}

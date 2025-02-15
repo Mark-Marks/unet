@@ -1,0 +1,21 @@
+{
+  "process": [
+    {
+      "rule": "convert_require",
+      "current": {
+        "name": "path",
+        "sources": {
+          "@pkg": "roblox_packages/",
+          "@server": "dev/server/",
+          "@client": "dev/client/",
+          "@shared": "dev/shared/",
+          "@unet": "lib"
+        }
+      },
+      "target": {
+        "name": "roblox",
+        "rojo_sourcemap": "sourcemap.json"
+      }
+    }
+  ]
+}

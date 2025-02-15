@@ -1,0 +1,19 @@
+[package]
+name = "mark-marks/unet"
+version = "0.1.0-alpha.0"
+registry = "https://github.com/UpliftGames/wally-index"
+realm = "shared"
+license = "MIT"
+exclude = ["**"]
+include = [
+    "default.project.json",
+    "dist",
+    "dist/**",
+    "LICENSE",
+    "wally.toml",
+    "README.md",
+]
+
+[dependencies]
+luausignal = "ffrostfall/luausignal@0.4.0"
+squash = "data-oriented-house/squash@2.5.0"

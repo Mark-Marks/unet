@@ -1,0 +1,11 @@
+{
+    "languageMode": "strict",
+    "aliases": {
+        "pkg": "roblox_packages",
+        "server": "dev/server",
+        "client": "dev/client",
+        "shared": "dev/shared",
+        "lune": ".lune/.lune-defs",
+        "unet": "lib"
+    }
+}

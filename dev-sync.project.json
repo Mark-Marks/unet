@@ -1,0 +1,24 @@
+{
+  "name": "dev",
+  "emitLegacyScripts": false,
+  "tree": {
+    "$className": "DataModel",
+
+    "ServerScriptService": {
+      "$path": "dist-dev/server"
+    },
+
+    "ReplicatedStorage": {
+      "client": {
+        "$path": "dist-dev/client"
+      },
+      "$path": "dist-dev/shared",
+      "packages": {
+        "unet": {
+          "$path": "dist"
+        },
+        "$path": "roblox_packages"
+      }
+    }
+  }
+}
